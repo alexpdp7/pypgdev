@@ -14,17 +14,14 @@ def start_db(data_dir, name):
     command = ['docker',
                'run',
                '-i',
+               '--rm',
                '--user', '{uid}:{gid}'.format(uid=uid, gid=gid),
                '-v', '/etc/passwd:/etc/passwd:ro',
                '-v', '{abs_data_dir}:/var/lib/postgresql/data'.format(abs_data_dir=abs_data_dir),
                '--name', name,
                'postgres',
               ]
-    try:
-        subprocess.run(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, check=True)
-    finally:
-        subprocess.run(['docker', 'kill', name], check=True)
-        subprocess.run(['docker', 'rm', name], check=True)
+    pty.spawn(command)
 
 
 def psql(name):
