@@ -1,3 +1,10 @@
+DESCRIPTION
+
+Tools for PostgreSQL database development
+
+pg_docker and pg_docker_psql start and connect to docker PostgreSQL instances,
+storing their data in your local filesystem.
+
 DEVELOPMENT
 
 mkvirtualenv --python=/usr/bin/python3 pypgdev
