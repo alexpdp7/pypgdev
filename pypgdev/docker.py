@@ -1,9 +1,10 @@
 import argparse
 import os
 from os import path
-import pty
 import signal
 import subprocess
+
+from pypgdev import terminal
 
 
 def start_db(data_dir, name):
@@ -21,7 +22,7 @@ def start_db(data_dir, name):
                '--name', name,
                'postgres',
               ]
-    pty.spawn(command)
+    terminal.start(command)
 
 
 def psql(name):
@@ -33,7 +34,7 @@ def psql(name):
                'postgres',
                'psql', '-h', 'postgres', '-U', 'postgres',
               ]
-    pty.spawn(command)
+    terminal.start(command)
 
 
 def start_db_main():
