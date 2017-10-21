@@ -1,0 +1,2 @@
+mkvirtualenv --python=/usr/bin/python3 pypgdev
+pip install -e .
