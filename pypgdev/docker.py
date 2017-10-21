@@ -7,21 +7,25 @@ import subprocess
 from pypgdev import terminal
 
 
-def start_db(data_dir, name):
+def start_db_command(data_dir, name):
     uid = os.getuid()
     gid = os.getgid()
     os.makedirs(data_dir, exist_ok=True)
     abs_data_dir = path.abspath(data_dir)
-    command = ['docker',
-               'run',
-               '-i',
-               '--rm',
-               '--user', '{uid}:{gid}'.format(uid=uid, gid=gid),
-               '-v', '/etc/passwd:/etc/passwd:ro',
-               '-v', '{abs_data_dir}:/var/lib/postgresql/data'.format(abs_data_dir=abs_data_dir),
-               '--name', name,
-               'postgres',
-              ]
+    return ['docker',
+            'run',
+            '-i',
+            '--rm',
+            '--user', '{uid}:{gid}'.format(uid=uid, gid=gid),
+            '-v', '/etc/passwd:/etc/passwd:ro',
+            '-v', '{abs_data_dir}:/var/lib/postgresql/data'.format(abs_data_dir=abs_data_dir),
+            '--name', name,
+            'postgres',
+           ]
+
+
+def start_db(data_dir, name):
+    command = start_db_command(data_dir, name)
     terminal.start(command)
 
 
