@@ -14,3 +14,30 @@ USAGE
 
 $ pg_docker ...
 $ pg_docker_psql ...
+
+TUTORIAL
+
+Start a new database:
+
+$ pg_docker tmp tutorial
+The files belonging to this database system will be owned by user "alex".
+...
+2017-10-21 10:34:45.713 UTC [1] LOG:  database system is ready to accept connections
+
+This will start a new database in a container named tutorial, storing its data
+in the tmp folder. The database will run in the foreground until you stop it
+with CTRL+C.
+
+If you switch to another console and do:
+
+$ pg_docker_psql tutorial
+psql (10.0)
+Type "help" for help.
+
+postgres=# 
+
+You will get a psql instance connected to the tutorial container database.
+
+The database data files are right in your system; you can even cp -a the
+folder and start a new identical and independent clone of the database to
+try new changes, for instance.
