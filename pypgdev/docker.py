@@ -1,6 +1,7 @@
 import argparse
 import os
 from os import path
+import pty
 import signal
 import subprocess
 
@@ -26,9 +27,28 @@ def start_db(data_dir, name):
         subprocess.run(['docker', 'rm', name], check=True)
 
 
+def psql(name):
+    command = ['docker',
+               'run',
+               '-it',
+               '--rm',
+               '--link', '{name}:postgres'.format(name=name),
+               'postgres',
+               'psql', '-h', 'postgres', '-U', 'postgres',
+              ]
+    pty.spawn(command)
+
+
 def start_db_main():
     parser = argparse.ArgumentParser()
     parser.add_argument('data_dir')
     parser.add_argument('name')
     args = parser.parse_args()
     start_db(args.data_dir, args.name)
+
+
+def psql_main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('name')
+    args = parser.parse_args()
+    psql(args.name)
