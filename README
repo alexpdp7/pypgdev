@@ -1,2 +1,9 @@
+DEVELOPMENT
+
 mkvirtualenv --python=/usr/bin/python3 pypgdev
 pip install -e .
+
+USAGE
+
+$ pg_docker ...
+$ pg_docker_psql ...

@@ -37,15 +37,15 @@ def psql(name):
 
 
 def start_db_main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('data_dir')
-    parser.add_argument('name')
+    parser = argparse.ArgumentParser(description='Starts a PostgreSQL database using docker')
+    parser.add_argument('data_dir', help='local path to PostgreSQL instance storage')
+    parser.add_argument('name', help='container name')
     args = parser.parse_args()
     start_db(args.data_dir, args.name)
 
 
 def psql_main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('name')
+    parser = argparse.ArgumentParser(description='Connects to a pg_docker_psql instance using docker')
+    parser.add_argument('name', help='database container name')
     args = parser.parse_args()
     psql(args.name)
