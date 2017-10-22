@@ -3,6 +3,7 @@ import os
 from os import path
 import signal
 import subprocess
+import uuid
 
 from pypgdev import terminal
 
@@ -39,6 +40,25 @@ def psql(name):
                'psql', '-h', 'postgres', '-U', 'postgres',
               ]
     terminal.start(command)
+
+
+def dump_schema(data_dir):
+    container_name = str(uuid.uuid4())
+    command = start_db_command(data_dir, container_name)
+    db_process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        command = ['docker',
+                   'run',
+                   '-it',
+                   '--rm',
+                   '--link', '{container_name}:postgres'.format(container_name=container_name),
+                   'postgres',
+                   'pg_dump', '-h', 'postgres', '-U', 'postgres', '--schema-only',
+                  ]
+        output = subprocess.run(command, stdout=subprocess.PIPE).stdout
+    finally:
+        db_process.terminate()
+    return output
 
 
 def start_db_main():
