@@ -1,4 +1,5 @@
 import argparse
+import difflib
 import os
 from os import path
 import signal
@@ -61,6 +62,13 @@ def dump_schema(data_dir):
     return output
 
 
+def schema_diff(data_dir_a, data_dir_b, context_lines=10):
+    schema_a = dump_schema(data_dir_a).decode().split('\n')
+    schema_b = dump_schema(data_dir_b).decode().split('\n')
+    diff = difflib.context_diff(schema_a, schema_b, n=context_lines)
+    return '\n'.join(diff)
+
+
 def start_db_main():
     parser = argparse.ArgumentParser(description='Starts a PostgreSQL database using docker')
     parser.add_argument('data_dir', help='local path to PostgreSQL instance storage')
@@ -74,3 +82,11 @@ def psql_main():
     parser.add_argument('name', help='database container name')
     args = parser.parse_args()
     psql(args.name)
+
+
+def schema_diff_main():
+    parser = argparse.ArgumentParser(description='Extracts an schema diff from two data dirs')
+    parser.add_argument('data_dir_a', help='local path to PostgreSQL instance storage a')
+    parser.add_argument('data_dir_b', help='local path to PostgreSQL instance storage b')
+    args = parser.parse_args()
+    print(schema_diff(args.data_dir_a, args.data_dir_b))
