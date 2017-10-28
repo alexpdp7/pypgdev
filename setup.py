@@ -7,8 +7,7 @@ setup(
     install_requires=['pexpect'],
     entry_points={
         'console_scripts': [
-            'pg_docker = pypgdev.docker:start_db_main',
-            'pg_docker_psql = pypgdev.docker:psql_main',
+            'pg_docker = pypgdev.docker:psql_main',
             'pg_docker_schema_diff = pypgdev.docker:schema_diff_main',
         ]
     },

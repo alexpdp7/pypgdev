@@ -28,11 +28,6 @@ def start_db_command(data_dir, name):
            ]
 
 
-def start_db(data_dir, name):
-    command = start_db_command(data_dir, name)
-    terminal.start(command)
-
-
 @contextlib.contextmanager
 def database_process(data_dir):
     container_name = str(uuid.uuid4())
@@ -86,14 +81,6 @@ def schema_diff(data_dir_a, data_dir_b, context_lines=10):
     schema_b = dump_schema(data_dir_b).decode().split('\n')
     diff = difflib.context_diff(schema_a, schema_b, n=context_lines)
     return '\n'.join(diff)
-
-
-def start_db_main():
-    parser = argparse.ArgumentParser(description='Starts a PostgreSQL database using docker')
-    parser.add_argument('data_dir', help='local path to PostgreSQL instance storage')
-    parser.add_argument('name', help='container name')
-    args = parser.parse_args()
-    start_db(args.data_dir, args.name)
 
 
 def psql_main():

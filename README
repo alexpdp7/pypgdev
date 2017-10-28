@@ -2,8 +2,8 @@ DESCRIPTION
 
 Tools for PostgreSQL database development
 
-pg_docker and pg_docker_psql start and connect to docker PostgreSQL instances,
-storing their data in your local filesystem.
+pg_docker starts and connects to docker PostgreSQL instances, storing
+its data in your local filesystem.
 
 pg_docker_schema_diff gives you a schema diff between to instances' data dirs.
 
@@ -32,37 +32,32 @@ $ pip install -e .
 USAGE
 
 $ pg_docker ...
-$ pg_docker_psql ...
 
 TUTORIAL
 
 Start and connect to a new database:
 
-$ pg_docker_psql tutorial
+$ pg_docker tutorial
 psql (10.0)
 Type "help" for help.
 
 postgres=# 
 
-You will get a psql instance connected to the tutorial container database.
-
-The database data files are right in your system; you can even cp -a the
-folder and start a new identical and independent clone of the database to
-try new changes, for instance.
+The database data files are right in your system in the tutorial
+directory; you can even cp -a the folder and start a new identical and
+independent clone of the database to try new changes, for instance.
 
 SCHEMA DIFF
 
-$ pg_docker_psql foo
+$ pg_docker foo
 # create table foo ( bar serial primary key );
 # \q
 
 $ cp -r foo bar
 
-$ pg_docker_psql bar
+$ pg_docker bar
 # alter table foo add column baz text not null;
 # \q
-
-CTRL+c the pg_docker command and:
 
 $ pg_docker_schema_diff foo bar
 [...]
