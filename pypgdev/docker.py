@@ -5,6 +5,7 @@ import os
 from os import path
 import signal
 import subprocess
+import time
 import uuid
 
 from pypgdev import terminal
@@ -37,20 +38,34 @@ def database_process(data_dir):
     container_name = str(uuid.uuid4())
     command = start_db_command(data_dir, container_name)
     db_process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    while True:
+        command = ['docker',
+                   'run',
+                   '-it',
+                   '--rm',
+                   '--link', '{name}:postgres'.format(name=container_name),
+                   'postgres',
+                   'psql', '-h', 'postgres', '-U', 'postgres', '-c', 'select 1',
+                  ]
+        if subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL).returncode == 0:
+            break
+        print('Waiting for database to be up...')
+        time.sleep(1)
     yield container_name
     db_process.terminate()
 
 
-def psql(name):
-    command = ['docker',
-               'run',
-               '-it',
-               '--rm',
-               '--link', '{name}:postgres'.format(name=name),
-               'postgres',
-               'psql', '-h', 'postgres', '-U', 'postgres',
-              ]
-    terminal.start(command)
+def psql(data_dir):
+    with database_process(data_dir) as container_name:
+        command = ['docker',
+                   'run',
+                   '-it',
+                   '--rm',
+                   '--link', '{name}:postgres'.format(name=container_name),
+                   'postgres',
+                   'psql', '-h', 'postgres', '-U', 'postgres',
+                  ]
+        terminal.start(command)
 
 
 def dump_schema(data_dir):
@@ -82,10 +97,10 @@ def start_db_main():
 
 
 def psql_main():
-    parser = argparse.ArgumentParser(description='Connects to a pg_docker_psql instance using docker')
-    parser.add_argument('name', help='database container name')
+    parser = argparse.ArgumentParser(description='Starts a PostgreSQL database instance and connects to it')
+    parser.add_argument('data_dir', help='local path to PostgreSQL instance storage')
     args = parser.parse_args()
-    psql(args.name)
+    psql(args.data_dir)
 
 
 def schema_diff_main():
