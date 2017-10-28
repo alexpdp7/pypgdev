@@ -1,4 +1,5 @@
 import argparse
+import contextlib
 import difflib
 import os
 from os import path
@@ -43,11 +44,17 @@ def psql(name):
     terminal.start(command)
 
 
-def dump_schema(data_dir):
+@contextlib.contextmanager
+def database_process(data_dir):
     container_name = str(uuid.uuid4())
     command = start_db_command(data_dir, container_name)
     db_process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    try:
+    yield container_name
+    db_process.terminate()
+
+
+def dump_schema(data_dir):
+    with database_process(data_dir) as container_name:
         command = ['docker',
                    'run',
                    '-it',
@@ -56,10 +63,7 @@ def dump_schema(data_dir):
                    'postgres',
                    'pg_dump', '-h', 'postgres', '-U', 'postgres', '--schema-only',
                   ]
-        output = subprocess.run(command, stdout=subprocess.PIPE).stdout
-    finally:
-        db_process.terminate()
-    return output
+        return subprocess.run(command, stdout=subprocess.PIPE).stdout
 
 
 def schema_diff(data_dir_a, data_dir_b, context_lines=10):
