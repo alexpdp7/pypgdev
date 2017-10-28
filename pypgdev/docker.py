@@ -32,6 +32,15 @@ def start_db(data_dir, name):
     terminal.start(command)
 
 
+@contextlib.contextmanager
+def database_process(data_dir):
+    container_name = str(uuid.uuid4())
+    command = start_db_command(data_dir, container_name)
+    db_process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    yield container_name
+    db_process.terminate()
+
+
 def psql(name):
     command = ['docker',
                'run',
@@ -42,15 +51,6 @@ def psql(name):
                'psql', '-h', 'postgres', '-U', 'postgres',
               ]
     terminal.start(command)
-
-
-@contextlib.contextmanager
-def database_process(data_dir):
-    container_name = str(uuid.uuid4())
-    command = start_db_command(data_dir, container_name)
-    db_process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    yield container_name
-    db_process.terminate()
 
 
 def dump_schema(data_dir):
