@@ -5,7 +5,7 @@ Tools for PostgreSQL database development
 pg_docker starts and connects to docker PostgreSQL instances, storing
 its data in your local filesystem.
 
-pg_docker_schema_diff gives you a schema diff between to instances' data dirs.
+pg_docker_schema_diff gives you a schema diff between two instances' data dirs.
 
 INSTALLATION
 
