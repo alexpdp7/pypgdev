@@ -11,27 +11,29 @@ import uuid
 from pypgdev import terminal
 
 
-def start_db_command(data_dir, name):
+def start_db_command(data_dir, name, port):
     uid = os.getuid()
     gid = os.getgid()
     os.makedirs(data_dir, exist_ok=True)
     abs_data_dir = path.abspath(data_dir)
-    return ['docker',
-            'run',
-            '-i',
-            '--rm',
-            '--user', '{uid}:{gid}'.format(uid=uid, gid=gid),
-            '-v', '/etc/passwd:/etc/passwd:ro',
-            '-v', '{abs_data_dir}:/var/lib/postgresql/data'.format(abs_data_dir=abs_data_dir),
-            '--name', name,
-            'postgres',
-           ]
+    return (['docker',
+             'run',
+             '-i',
+             '--rm',
+            ] +
+            (['-p', '{port}:5432'.format(port=port)] if port else []) +
+            ['--user', '{uid}:{gid}'.format(uid=uid, gid=gid),
+             '-v', '/etc/passwd:/etc/passwd:ro',
+             '-v', '{abs_data_dir}:/var/lib/postgresql/data'.format(abs_data_dir=abs_data_dir),
+             '--name', name,
+             'postgres',
+            ])
 
 
 @contextlib.contextmanager
-def database_process(data_dir):
+def database_process(data_dir, port=None):
     container_name = str(uuid.uuid4())
-    command = start_db_command(data_dir, container_name)
+    command = start_db_command(data_dir, container_name, port)
     db_process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     while True:
         command = ['docker',
@@ -50,8 +52,8 @@ def database_process(data_dir):
     db_process.terminate()
 
 
-def psql(data_dir):
-    with database_process(data_dir) as container_name:
+def psql(data_dir, port):
+    with database_process(data_dir, port) as container_name:
         command = ['docker',
                    'run',
                    '-it',
@@ -86,8 +88,9 @@ def schema_diff(data_dir_a, data_dir_b, context_lines=10):
 def psql_main():
     parser = argparse.ArgumentParser(description='Starts a PostgreSQL database instance and connects to it')
     parser.add_argument('data_dir', help='local path to PostgreSQL instance storage')
+    parser.add_argument('--port', help='port to expose', type=int, default=None)
     args = parser.parse_args()
-    psql(args.data_dir)
+    psql(args.data_dir, args.port)
 
 
 def schema_diff_main():
