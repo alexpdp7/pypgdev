@@ -9,19 +9,12 @@ pg_docker_schema_diff gives you a schema diff between two instances' data dirs.
 
 INSTALLATION
 
-We don't have any serious releases of pypgdev. To play around, you can create
-a Python virtualenv (so you don't touch your system) and install it with:
+We don't have any serious releases of pypgdev. To play around, you can  install
+it with pipx:
 
-$ python3 -m venv pypgdev.venv
-$ . pypgdev.venv/bin/activate
-$ pip install https://github.com/alexpdp7/pypgdev/archive/master.zip
+$ pipx install --spec git+https://github.com/alexpdp7/pypgdev.git pypgdev
 
-Then you should be able to use the pg_docker_* commands. You will need to
-activate the virtualenv in other shell sessions by reissuing the second
-"activate" command.
-
-All changes will be contained in the pypgdev.venv directory, which can
-be removed.
+Then you should be able to use the pg_docker_* commands.
 
 DEVELOPMENT INSTALLATION
 
